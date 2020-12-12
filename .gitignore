@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/nottracery
+nottracery.so
+nottracery.dylib
+nottracery.dll
+nottracery.a
+nottracery.lib
+nottracery-test-*
+*.exe
+*.o
+*.obj
+*.lst

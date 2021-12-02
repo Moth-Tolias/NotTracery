@@ -1,9 +1,13 @@
+module nottracery;
+
 import std.stdio;
 import std.conv;
 import std.string;
 import std.json;
 import std.random;
 import std.exception;
+
+@safe:
 
 class Grammar
 {
@@ -12,18 +16,15 @@ class Grammar
 	this(JSONValue jsonValue)
 	{
 		enforce(jsonValue.type == JSONType.object, "input must be valid json");
-		foreach (key, value; jsonValue.object)
+		foreach (key, value; jsonValue.objectNoRef)
 		{
 			symbols[key] = new Symbol(value, this);
 		}
-
 	}
 
 	string createFlattened(string symbolID = "origin")
 	{
 		//auto trace = new Trace(symbolID);
-
-		//auto rnd = Random(unpredictableSeed);
 
 		char[] result;
 		size_t num = uniform(0, this.symbols[symbolID].rules.length);
@@ -64,7 +65,7 @@ class Symbol
 		this.parent = parent;
 
 		enforce(jsonValue.type == JSONType.array, "input must comply to the tracery spec: symbol is not an array");
-		foreach (value; jsonValue.array)
+		foreach (value; jsonValue.arrayNoRef)
 		{
 			enforce(value.type == JSONType.string, "input must comply to the tracery spec: rule is not a string");
 			dstring ruleString = dtext(value.str);
@@ -137,7 +138,7 @@ class Trace
 	}
 }
 
-string getFileString(string filename)
+private string getFileString(string filename) @trusted
 {
 	char[] result;
 
@@ -150,14 +151,13 @@ string getFileString(string filename)
 	return result.idup;
 }
 
-void main()
+@safe unittest
 {
 	auto fileString = getFileString("baba.json");
 
 	auto jsonTree = parseJSON(fileString);
 	//writeln(jsonTree.type);
 	auto grammar = new Grammar(jsonTree);
-
 
 	/*foreach(symbol; grammar.symbols)
 	{
@@ -169,7 +169,6 @@ void main()
 			}
 		}
 	}*/
-
 
 	//writeln(grammar.symbols["noun"].rules[0].tokens);
 
